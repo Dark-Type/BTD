@@ -1,4 +1,4 @@
-package com.example.btd.viewModels
+package com.example.btd.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,6 +6,7 @@ import com.example.btd.DIContainer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.regex.Pattern
 
 class AuthViewModel : ViewModel() {
 
@@ -94,6 +95,9 @@ class AuthViewModel : ViewModel() {
     }
 
     private fun isValidEmail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        val emailPattern: Pattern = Pattern.compile(
+            "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+        )
+        return emailPattern.matcher(email).matches()
     }
 }

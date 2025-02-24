@@ -2,7 +2,7 @@ package com.example.btd.services
 
 import com.example.btd.interfaces.AuthService
 
-class TestAuthService : AuthService {
+class MockAuthService : AuthService {
     override fun login(email: String, password: String, role: String): Boolean {
         return email.contains("@") && password.isNotEmpty()
     }

@@ -22,7 +22,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.btd.viewModels.AuthViewModel
+import com.example.btd.viewmodel.AuthViewModel
 
 @Composable
 fun AuthScreen(navController: NavController) {
@@ -211,12 +211,11 @@ fun LoginForm(
                 Text(text = "Login", color = Color.White)
             }
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(
-                onClick = onGoBack,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Go Back")
-            }
+            Text(
+                text = "← Back",
+                modifier = Modifier.clickable { onGoBack() },
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
@@ -280,12 +279,11 @@ fun TeacherRegistrationForm(
                 Text(text = "Register as Teacher", color = Color.White)
             }
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(
-                onClick = onGoBack,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Go Back")
-            }
+            Text(
+                text = "← Back",
+                modifier = Modifier.clickable { onGoBack() },
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
@@ -352,12 +350,11 @@ fun StudentRegistrationForm(
                 Text(text = "Register as Student", color = Color.White)
             }
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(
-                onClick = onGoBack,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Go Back")
-            }
+            Text(
+                text = "← Back",
+                modifier = Modifier.clickable { onGoBack() },
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
