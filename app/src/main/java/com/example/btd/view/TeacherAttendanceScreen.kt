@@ -16,6 +16,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -39,6 +40,7 @@ fun TeacherAttendanceScreen() {
     val viewModel: TeacherViewModel = viewModel()
     val attendanceRecords by viewModel.attendanceRecords.collectAsState()
 
+
     val currentDate = LocalDate.now()
     val yearMonth = YearMonth.of(currentDate.year, currentDate.month)
     val daysInMonth = yearMonth.lengthOfMonth()
@@ -47,7 +49,16 @@ fun TeacherAttendanceScreen() {
 
     var selectedRecord by remember { mutableStateOf<AttendanceRecord?>(null) }
 
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
+
     Column(modifier = Modifier.padding(16.dp)) {
+        if (isRefreshing) {
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            )
+        }
         Text(text = "Attendance Calendar", fontWeight = FontWeight.Bold)
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = Color.Gray)
         LazyVerticalGrid(

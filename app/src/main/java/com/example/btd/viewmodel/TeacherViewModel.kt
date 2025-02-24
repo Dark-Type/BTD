@@ -14,19 +14,36 @@ class TeacherViewModel : ViewModel() {
     private val _attendanceRecords = MutableStateFlow<List<AttendanceRecord>>(emptyList())
     val attendanceRecords: StateFlow<List<AttendanceRecord>> get() = _attendanceRecords
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing
+
     init {
         loadAttendanceData()
     }
 
     private fun loadAttendanceData() {
         viewModelScope.launch {
-            delay(500)
-            val now = LocalDate.now()
-            _attendanceRecords.value = MockAttendanceService.getAttendanceData(now.monthValue, now.year)
+            _isRefreshing.value = true
+            try {
+                delay(500)
+                val now = LocalDate.now()
+                _attendanceRecords.value = MockAttendanceService.getAttendanceData(now.monthValue, now.year)
+            } finally {
+                _isRefreshing.value = false
+            }
         }
     }
 
-//    fun getRecordForDate(date: LocalDate): AttendanceRecord? {
-//        return _attendanceRecords.value.find { it.date == date }
-//    }
+    fun refreshAttendanceData() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            try {
+                delay(500)
+                val now = LocalDate.now()
+                _attendanceRecords.value = MockAttendanceService.getAttendanceData(now.monthValue, now.year)
+            } finally {
+                _isRefreshing.value = false
+            }
+        }
+    }
 }
