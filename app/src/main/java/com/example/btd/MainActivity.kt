@@ -9,9 +9,9 @@ import androidx.compose.material3.Surface
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.btd.View.AuthScreen
-import com.example.btd.View.StudentScreen
-import com.example.btd.View.TeacherScreen
+import com.example.btd.view.AuthScreen
+import com.example.btd.view.StudentScreen
+import com.example.btd.view.TeacherScreen
 import com.example.btd.ui.theme.BTDTheme
 
 class MainActivity : ComponentActivity() {
