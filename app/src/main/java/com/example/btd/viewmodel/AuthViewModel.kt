@@ -3,6 +3,7 @@ package com.example.btd.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.btd.DIContainer
+import com.example.btd.session.UserSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -33,11 +34,18 @@ class AuthViewModel : ViewModel() {
     fun login(email: String, password: String, role: String) {
         viewModelScope.launch {
             if (!isValidEmail(email) || password.isBlank()) {
-                _loginState.value = LoginResult.Error("Enter a valid email and password cannot be empty.")
+                _loginState.value =
+                    LoginResult.Error("Enter a valid email and password cannot be empty.")
                 return@launch
             }
             val success = authService.login(email, password, role)
-            _loginState.value = if (success) LoginResult.Success else LoginResult.Error("Invalid credentials.")
+            if (success) {
+                UserSession.isLoggedIn = true
+                UserSession.userRole = role
+                _loginState.value = LoginResult.Success
+            } else {
+                _loginState.value = LoginResult.Error("Invalid credentials.")
+            }
         }
     }
 
@@ -53,7 +61,8 @@ class AuthViewModel : ViewModel() {
             if (name.isBlank() || surname.isBlank() || !isValidEmail(email) ||
                 faculty.isBlank() || password.isBlank() || verifyPassword.isBlank()
             ) {
-                _registerState.value = RegisterResult.Error("Please fill out all required fields with valid values.")
+                _registerState.value =
+                    RegisterResult.Error("Please fill out all required fields with valid values.")
                 return@launch
             }
             if (password != verifyPassword) {
@@ -61,7 +70,13 @@ class AuthViewModel : ViewModel() {
                 return@launch
             }
             val success = authService.registerTeacher(name, surname, email, faculty, password)
-            _registerState.value = if (success) RegisterResult.Success else RegisterResult.Error("Registration failed.")
+            if (success) {
+                UserSession.isLoggedIn = true
+                UserSession.userRole = "teacher"
+                _registerState.value = RegisterResult.Success
+            } else {
+                _registerState.value = RegisterResult.Error("Registration failed.")
+            }
         }
     }
 
@@ -75,24 +90,29 @@ class AuthViewModel : ViewModel() {
         verifyPassword: String
     ) {
         viewModelScope.launch {
-            if (name.isBlank() || surname.isBlank() || email.isBlank() ||
+            if (name.isBlank() || surname.isBlank() || !isValidEmail(email) ||
                 faculty.isBlank() || group.isBlank() || password.isBlank() || verifyPassword.isBlank()
             ) {
-                _registerState.value = RegisterResult.Error("Please fill out all fields with valid values.")
-                return@launch
-            }
-            if (!isValidEmail(email)){
-                _registerState.value = RegisterResult.Error("Please verify your email, currently it is not valid.")
+                _registerState.value =
+                    RegisterResult.Error("Please fill out all required fields with valid values.")
                 return@launch
             }
             if (password != verifyPassword) {
                 _registerState.value = RegisterResult.Error("Passwords do not match.")
                 return@launch
             }
-            val success = authService.registerStudent(name, surname, email, faculty, group, password)
-            _registerState.value = if (success) RegisterResult.Success else RegisterResult.Error("Registration failed.")
+            val success =
+                authService.registerStudent(name, surname, email, faculty, group, password)
+            if (success) {
+                UserSession.isLoggedIn = true
+                UserSession.userRole = "student"
+                _registerState.value = RegisterResult.Success
+            } else {
+                _registerState.value = RegisterResult.Error("Registration failed.")
+            }
         }
     }
+
 
     private fun isValidEmail(email: String): Boolean {
         val emailPattern: Pattern = Pattern.compile(

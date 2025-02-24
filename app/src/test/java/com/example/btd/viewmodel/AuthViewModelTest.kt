@@ -114,7 +114,7 @@ class AuthViewModelTest {
         val result = viewModel.registerState.value
         assertTrue("Expected student registration error", result is AuthViewModel.RegisterResult.Error)
         if (result is AuthViewModel.RegisterResult.Error) {
-            assertEquals("Please fill out all fields with valid values.", result.message)
+            assertEquals("Please fill out all required fields with valid values.", result.message)
         }
     }
 
