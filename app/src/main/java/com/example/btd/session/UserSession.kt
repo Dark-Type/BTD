@@ -8,7 +8,7 @@ object UserSession {
     private const val KEY_IS_LOGGED_IN = "is_logged_in"
     private const val KEY_USER_ROLE = "user_role"
 
-    private lateinit var prefs: SharedPreferences
+    lateinit var prefs: SharedPreferences
 
     fun init(context: Context) {
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)

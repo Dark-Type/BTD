@@ -50,7 +50,8 @@ android {
 }
 
 dependencies {
-
+    testImplementation (libs.byte.buddy)
+    testImplementation (libs.byte.buddy.agent)
     implementation(libs.androidx.core.ktx)
     implementation (libs.accompanist.permissions)
     implementation (libs.zoomable)
@@ -64,6 +65,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.core.android)
     implementation(libs.androidx.datastore.preferences.core.jvm)
+    implementation(libs.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     testImplementation (libs.androidx.core.testing)

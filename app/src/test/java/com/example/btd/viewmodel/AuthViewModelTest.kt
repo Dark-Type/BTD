@@ -1,6 +1,8 @@
 package com.example.btd.viewmodel
 
+import android.content.SharedPreferences
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.btd.session.UserSession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -13,6 +15,8 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
 
 class AuthViewModelTest {
 
@@ -22,11 +26,31 @@ class AuthViewModelTest {
     val instantTaskRule = InstantTaskExecutorRule()
 
     private lateinit var viewModel: AuthViewModel
+    private lateinit var prefs: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+
+
+        MockitoAnnotations.initMocks(this)
+
+
+        prefs = Mockito.mock(SharedPreferences::class.java)
+        editor = Mockito.mock(SharedPreferences.Editor::class.java)
+
+
+        Mockito.`when`(prefs.edit()).thenReturn(editor)
+        Mockito.`when`(editor.putBoolean(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(editor)
+        Mockito.`when`(editor.putString(Mockito.anyString(), Mockito.anyString())).thenReturn(editor)
+        Mockito.`when`(prefs.getBoolean(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(false)
+        Mockito.`when`(prefs.getString(Mockito.anyString(), Mockito.anyString())).thenReturn("")
+
+
+        UserSession.prefs = prefs
+
         viewModel = AuthViewModel()
     }
 
@@ -34,6 +58,8 @@ class AuthViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+
+        Mockito.reset(prefs, editor)
     }
 
     @Test

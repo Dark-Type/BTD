@@ -1,6 +1,7 @@
 [versions]
 accompanistPermissions = "0.32.0"
 agp = "8.5.2"
+byteBuddy = "1.10.22"
 coreTesting = "2.2.0"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
@@ -15,11 +16,14 @@ navigationCompose = "2.8.7"
 datastoreCoreAndroid = "1.1.2"
 datastorePreferencesCoreJvm = "1.1.2"
 zoomable = "1.4.1"
+coreKtxVersion = "1.6.1"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
+byte-buddy = { module = "net.bytebuddy:byte-buddy", version.ref = "byteBuddy" }
+byte-buddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "byteBuddy" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -38,6 +42,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 androidx-datastore-preferences-core-jvm = { group = "androidx.datastore", name = "datastore-preferences-core-jvm", version.ref = "datastorePreferencesCoreJvm" }
 zoomable = { module = "com.mxalbert.zoomable:zoomable", version.ref = "zoomable" }
+core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
