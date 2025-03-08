@@ -1,7 +1,7 @@
 package com.example.btd.services
 
-import com.example.btd.models.AttendanceRecord
-import com.example.btd.models.StudentAbsence
+import com.example.btd.presentation.models.AttendanceRecord
+import com.example.btd.presentation.models.StudentAbsence
 import java.time.LocalDate
 
 object MockAttendanceService {

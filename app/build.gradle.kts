@@ -1,6 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    kotlin("plugin.serialization") version "1.9.0"
+    kotlin("kapt") version "2.1.0"
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -50,6 +55,15 @@ android {
 }
 
 dependencies {
+    implementation (libs.logging.interceptor)
+    implementation (libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation (libs.retrofit)
+    implementation(libs.androidx.annotation)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.coil.compose)
+
     testImplementation (libs.byte.buddy)
     testImplementation (libs.byte.buddy.agent)
     implementation(libs.androidx.core.ktx)

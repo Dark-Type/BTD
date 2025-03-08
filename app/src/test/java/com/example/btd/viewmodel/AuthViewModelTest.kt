@@ -2,6 +2,7 @@ package com.example.btd.viewmodel
 
 import android.content.SharedPreferences
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.btd.presentation.viewmodel.AuthViewModel
 import com.example.btd.session.UserSession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -124,7 +125,8 @@ class AuthViewModelTest {
 
     @Test
     fun testStudentRegistrationPasswordMismatch() = runTest(testDispatcher) {
-        viewModel.registerStudent("Jane", "Smith", "jane.smith@example.com", "Engineering", "Group A", "pass123", "pass124")
+        viewModel.registerStudent("Jane", "Smith", "jane.smith@example.com", "Engineering", listOf(
+            "Group A"), "pass123", "pass124")
         testDispatcher.scheduler.advanceUntilIdle()
         val result = viewModel.registerState.value
         assertTrue("Expected student registration error", result is AuthViewModel.RegisterResult.Error)
@@ -135,7 +137,7 @@ class AuthViewModelTest {
 
     @Test
     fun testStudentRegistrationMissingFields() = runTest(testDispatcher) {
-        viewModel.registerStudent("Jane", "", "jane.smith@example.com", "Engineering", "Group A", "pass123", "pass123")
+        viewModel.registerStudent("Jane", "", "jane.smith@example.com", "Engineering", listOf("Group A"), "pass123", "pass123")
         testDispatcher.scheduler.advanceUntilIdle()
         val result = viewModel.registerState.value
         assertTrue("Expected student registration error", result is AuthViewModel.RegisterResult.Error)
@@ -146,7 +148,7 @@ class AuthViewModelTest {
 
     @Test
     fun testStudentRegistrationSuccess() = runTest(testDispatcher) {
-        viewModel.registerStudent("Jane", "Smith", "jane.smith@example.com", "Engineering", "Group A", "pass123", "pass123")
+        viewModel.registerStudent("Jane", "Smith", "jane.smith@example.com", "Engineering", listOf("Group A"), "pass123", "pass123")
         testDispatcher.scheduler.advanceUntilIdle()
         val result = viewModel.registerState.value
         assertTrue("Expected student registration success", result is AuthViewModel.RegisterResult.Success)
