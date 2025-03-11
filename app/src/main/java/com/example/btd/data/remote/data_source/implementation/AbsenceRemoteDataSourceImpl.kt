@@ -2,6 +2,7 @@ package com.example.btd.data.remote.data_source.implementation
 
 import com.example.btd.data.models.CreateAbsenceModel
 import com.example.btd.data.models.EditAbsenceModel
+import com.example.btd.data.networking.AuthInterceptor
 import com.example.btd.data.networking.NetworkModule
 import com.example.btd.data.remote.api_services.ApiServiceAbsent
 import com.example.btd.data.remote.data_source.interfaces.AbsenceRemoteDataSource
@@ -12,7 +13,10 @@ import okhttp3.RequestBody
 class AbsenceRemoteDataSourceImpl(
     private val apiAbsenceService: ApiServiceAbsent = NetworkModule().provideService<ApiServiceAbsent>(
         NetworkModule().provideRetrofit(
-            NetworkModule().provideOkHttpClient()
+            NetworkModule().provideOkHttpClient(
+                AuthInterceptor()
+            )
+
         )
     ),
 ) : AbsenceRemoteDataSource {
