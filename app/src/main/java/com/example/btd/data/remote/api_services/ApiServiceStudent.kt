@@ -14,7 +14,7 @@ interface ApiServiceStudent {
     @POST("/api/student/register")
     suspend fun postRegister(@Body registerStudentModel: RegisterStudentModel): TokenResponse
 
-    @POST("/api/student/login")
+    @POST("/api/user/login")
     suspend fun postLogin(@Body loginCredentials: LoginModel): TokenResponse
 
     @GET("/api/student/profile")
