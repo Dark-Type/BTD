@@ -6,7 +6,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 
 class AddFileToAbsenceUseCase(
     configuration: Configuration = Configuration(Dispatchers.IO),
@@ -22,8 +21,8 @@ class AddFileToAbsenceUseCase(
 
     data class Request(
         val id: String,
-        val name: RequestBody,
-        val description: RequestBody,
+        val name: String,
+        val description: String,
         val file: MultipartBody.Part,
     ) : UseCase.Request
 

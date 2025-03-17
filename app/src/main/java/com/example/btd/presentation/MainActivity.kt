@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.btd.domain.TokenManager
 import com.example.btd.session.UserSession
 import com.example.btd.presentation.view.AuthScreen
 import com.example.btd.presentation.view.StudentScreen
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             BTDTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
+                    TokenManager.getInstance(this)
                     val navController = rememberNavController()
                     val startDestination = if (UserSession.isLoggedIn) {
                         if (UserSession.userRole == "teacher") "teacher_home" else "student_home"

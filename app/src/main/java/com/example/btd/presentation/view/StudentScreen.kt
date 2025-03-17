@@ -8,29 +8,40 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.material.icons.Icons
-import androidx.compose.runtime.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,12 +49,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.btd.services.AbsenceSubmission
-import com.example.btd.session.UserSession
+import com.example.btd.data.models.AbsenceModel
 import com.example.btd.presentation.viewmodel.StudentScreenViewModel
 import com.example.btd.presentation.viewmodel.SubmissionResult
+import com.example.btd.session.UserSession
 import kotlinx.coroutines.launch
-
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -53,7 +67,7 @@ import java.util.Calendar
 fun StudentScreen(navController: NavController) {
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showSubmissionDialog by remember { mutableStateOf(false) }
-    var expandedSubmissionId by remember { mutableStateOf<Int?>(null) }
+    var expandedSubmissionId by remember { mutableStateOf<String?>(null) }
     val lazyListState = rememberLazyListState()
     var startDate by remember { mutableStateOf<LocalDate?>(null) }
     var endDate by remember { mutableStateOf<LocalDate?>(null) }
@@ -90,34 +104,60 @@ fun StudentScreen(navController: NavController) {
     }
 
     var selectedDocumentUri by remember { mutableStateOf<Uri?>(null) }
+    var multipartBodyPart by remember {
+        mutableStateOf<List<MultipartBody.Part>>(emptyList())
+    }
+
     val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
+        contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             selectedDocumentUri = uri
-            uri?.let {
+            uri?.let { selectedUri ->
                 try {
-                    val cursor = context.contentResolver.query(it, null, null, null, null)
-                    cursor?.use { c ->
-                        if (c.moveToFirst()) {
-                            val displayName =
-                                c.getString(c.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
-                            documentName = displayName
-                        }
-                    } ?: run {
+                    val inputStream = context.contentResolver.openInputStream(selectedUri)
+                    inputStream?.use { stream ->
+                        val byteArray = stream.readBytes()
 
-                        documentName = uri.lastPathSegment ?: "Unknown file"
+                        val file = File.createTempFile("temp", null, context.cacheDir)
+                        file.writeBytes(byteArray)
+
+                        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                        val body = MultipartBody.Part.createFormData(
+                            "file",
+                            file.name,
+                            requestFile
+                        )
+                        multipartBodyPart = multipartBodyPart + body
+
+                        val cursor =
+                            context.contentResolver.query(selectedUri, null, null, null, null)
+                        cursor?.use { c ->
+                            if (c.moveToFirst()) {
+                                val displayName =
+                                    c.getString(c.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+                                documentName = displayName
+                            }
+                        } ?: run {
+                            documentName = selectedUri.lastPathSegment ?: "Unknown file"
+                            Toast.makeText(
+                                context,
+                                "Could not get file details, using fallback name",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        context.contentResolver.takePersistableUriPermission(
+                            selectedUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
+
                         Toast.makeText(
                             context,
-                            "Could not get file details, using fallback name",
+                            "File selected: $documentName, size: ${byteArray.size} bytes",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                    context.contentResolver.takePersistableUriPermission(
-                        it,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
                 } catch (e: Exception) {
-
                     documentName = "Error getting file name"
                     Toast.makeText(
                         context,
@@ -128,8 +168,6 @@ fun StudentScreen(navController: NavController) {
             }
         }
     )
-
-
 
     if (showLogoutDialog) {
         AlertDialog(
@@ -180,7 +218,7 @@ fun StudentScreen(navController: NavController) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(text = "Document: ${documentName ?: "None"}")
                         Spacer(modifier = Modifier.padding(4.dp))
-                        Button(onClick = { filePickerLauncher.launch(arrayOf("*/*")) }) {
+                        Button(onClick = { filePickerLauncher.launch("*/*") }) {
                             Text("Upload File")
                         }
                     }
@@ -196,7 +234,7 @@ fun StudentScreen(navController: NavController) {
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
-                            viewModel.submitAbsence(startDate!!, endDate!!, documentName)
+                            viewModel.submitAbsence(startDate!!, endDate!!, "fucking reason", multipartBodyPart)
                         }
                     }
                 ) {
@@ -255,7 +293,9 @@ fun StudentScreen(navController: NavController) {
                             viewModel.refreshSubmissions()
                         }
                     }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = "Refresh")
                     }
                 },
                 actions = {
@@ -319,7 +359,7 @@ fun StudentScreen(navController: NavController) {
 }
 
 @Composable
-fun SubmissionCard(submission: AbsenceSubmission, isExpanded: Boolean, onClick: () -> Unit) {
+fun SubmissionCard(submission: AbsenceModel, isExpanded: Boolean, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -328,14 +368,14 @@ fun SubmissionCard(submission: AbsenceSubmission, isExpanded: Boolean, onClick: 
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Text(
-                "From: ${submission.startDate} To: ${submission.endDate}",
+                "From: ${submission.from} To: ${submission.to}",
                 fontWeight = FontWeight.Bold
             )
             Text("Status: ${submission.status}")
             if (isExpanded) {
                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                 Text(
-                    text = "Document: ${submission.document ?: "No document attached"}",
+                    text = "Document: ${submission.files ?: "No document attached"}",
                     color = Color.Gray
                 )
             }

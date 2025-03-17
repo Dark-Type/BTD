@@ -7,12 +7,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.btd.data.models.LoginModel
 import com.example.btd.data.models.RegisterStudentModel
+import com.example.btd.data.models.RegisterUserModel
 import com.example.btd.data.models.TokenResponse
+import com.example.btd.domain.TokenManager
 import com.example.btd.domain.converters.LoginConverter
 import com.example.btd.domain.converters.RegisterConverter
+import com.example.btd.domain.converters.RegisterUserConverter
 import com.example.btd.domain.models.UiState
 import com.example.btd.domain.use_cases.LoginUseCase
 import com.example.btd.domain.use_cases.RegisterUseCase
+import com.example.btd.domain.use_cases.RegisterUserUseCase
 import com.example.btd.session.UserSession
 import kotlinx.coroutines.launch
 
@@ -20,10 +24,11 @@ class AuthViewModel : ViewModel() {
 
     private val loginUseCase = LoginUseCase()
     private val registerUseCase = RegisterUseCase()
-
+    private val registerUserUseCase = RegisterUserUseCase()
 
     private val loginConverter = LoginConverter()
     private val registerConverter = RegisterConverter()
+    private val registerUserConverter = RegisterUserConverter()
 
     private val _loginState = MutableLiveData<UiState<TokenResponse>>()
     val loginState: LiveData<UiState<TokenResponse>> = _loginState
@@ -52,6 +57,8 @@ class AuthViewModel : ViewModel() {
                 if (uiState is UiState.Success) {
                     UserSession.isLoggedIn = true
                     UserSession.userRole = role
+                    Log.d("token",uiState.data.token)
+                    TokenManager.getInstance().saveToken(uiState.data.token)
                 }
             }
         }
@@ -67,12 +74,11 @@ class AuthViewModel : ViewModel() {
         password: String,
         verifyPassword: String,
         patronymic: String = "",
-        phoneNumber: String? = null
+        phoneNumber: String? = null,
     ) {
-        if (name.isBlank() || surname.isBlank() || !isValidEmail(email) ||
-            faculty.isBlank() || group.isEmpty() || password.isBlank() || verifyPassword.isBlank()
-        ) {
-            _registerState.value = UiState.Error("Please fill out all required fields with valid values.")
+        if (name.isBlank() || surname.isBlank() || !isValidEmail(email) || faculty.isBlank() || group.isEmpty() || password.isBlank() || verifyPassword.isBlank()) {
+            _registerState.value =
+                UiState.Error("Please fill out all required fields with valid values.")
             return
         }
 
@@ -88,13 +94,7 @@ class AuthViewModel : ViewModel() {
 
             val request = RegisterUseCase.Request(
                 RegisterStudentModel(
-                    surname,
-                    name,
-                    patronymic,
-                    email,
-                    password,
-                    phoneNumber,
-                    group
+                    surname, name, patronymic, email, password, phoneNumber, group
                 )
             )
 
@@ -107,6 +107,7 @@ class AuthViewModel : ViewModel() {
                 if (uiState is UiState.Success) {
                     UserSession.isLoggedIn = true
                     UserSession.userRole = "student"
+                    TokenManager.getInstance().saveToken(uiState.data.token)
                 }
             }
         }
@@ -116,15 +117,14 @@ class AuthViewModel : ViewModel() {
         name: String,
         surname: String,
         email: String,
-        faculty: String,
+        phoneNumber: String,
         password: String,
         verifyPassword: String,
-        patronymic: String = ""
+        patronymic: String = "",
     ) {
-        if (name.isBlank() || surname.isBlank() || !isValidEmail(email) ||
-            faculty.isBlank() || password.isBlank() || verifyPassword.isBlank()
-        ) {
-            _registerState.value = UiState.Error("Please fill out all required fields with valid values.")
+        if (name.isBlank() || surname.isBlank() || !isValidEmail(email) || phoneNumber.isBlank() || password.isBlank() || verifyPassword.isBlank()) {
+            _registerState.value =
+                UiState.Error("Please fill out all required fields with valid values.")
             return
         }
 
@@ -132,7 +132,30 @@ class AuthViewModel : ViewModel() {
             _registerState.value = UiState.Error("Passwords do not match.")
             return
         }
+        viewModelScope.launch {
 
+            _registerState.value = UiState.Loading
+
+
+            val request = RegisterUserUseCase.Request(
+                RegisterUserModel(
+                    surname, name, patronymic, email, password, phoneNumber
+                )
+            )
+
+            registerUserUseCase.execute(request).collect { result ->
+                val uiState = registerUserConverter.convert(result)
+                _registerState.value = uiState
+                Log.d("AuthViewModel", "Registration result: $uiState")
+
+
+                if (uiState is UiState.Success) {
+                    UserSession.isLoggedIn = true
+                    UserSession.userRole = "student"
+                    TokenManager.getInstance().saveToken(uiState.data.token)
+                }
+            }
+        }
 
         _registerState.value = UiState.Success(TokenResponse("teacher-mock-token"))
         UserSession.isLoggedIn = true

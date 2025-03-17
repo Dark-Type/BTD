@@ -7,7 +7,7 @@ object UserSession {
     private const val PREF_NAME = "user_session"
     private const val KEY_IS_LOGGED_IN = "is_logged_in"
     private const val KEY_USER_ROLE = "user_role"
-
+    var token =""
     lateinit var prefs: SharedPreferences
 
     fun init(context: Context) {

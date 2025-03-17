@@ -158,8 +158,8 @@ fun AuthScreen(navController: NavController) {
                     "register" -> {
                         if (userRole == "teacher") {
                             TeacherRegistrationForm(
-                                onRegister = { name, surname, email, faculty, password, verifyPassword ->
-                                    authViewModel.registerTeacher(name, surname, email, faculty, password, verifyPassword)
+                                onRegister = { name, surname, email, phoneNumber, password, verifyPassword ->
+                                    authViewModel.registerTeacher(name, surname, email, phoneNumber, password, verifyPassword)
                                 },
                                 errorMessage = if (registerState is UiState.Error<*>) (registerState as UiState.Error<*>).errorMessage else "",
                                 onGoBack = { userRole = "" }
@@ -276,7 +276,7 @@ fun TeacherRegistrationForm(
             Spacer(modifier = Modifier.height(8.dp))
             TextField(value = email, onValueChange = { email = it }, label = { Text("Email") })
             Spacer(modifier = Modifier.height(8.dp))
-            TextField(value = faculty, onValueChange = { faculty = it }, label = { Text("Faculty") })
+            TextField(value = faculty, onValueChange = { faculty = it }, label = { Text("Phone number") })
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 value = password,
@@ -452,7 +452,6 @@ fun UpdatedStudentRegistrationForm(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Password fields
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -509,6 +508,10 @@ fun UpdatedStudentRegistrationForm(
                 modifier = Modifier.clickable { onGoBack() },
                 color = MaterialTheme.colorScheme.primary
             )
+
+
+            Spacer(modifier = Modifier.height(32.dp))
+
         }
     }
 }

@@ -3,8 +3,8 @@ package com.example.btd.data.remote.api_services
 import com.example.btd.data.models.EditProfileModel
 import com.example.btd.data.models.LoginModel
 import com.example.btd.data.models.RegisterStudentModel
+import com.example.btd.data.models.RegisterUserModel
 import com.example.btd.data.models.TokenResponse
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -16,6 +16,9 @@ interface ApiServiceStudent {
 
     @POST("/api/user/login")
     suspend fun postLogin(@Body loginCredentials: LoginModel): TokenResponse
+
+    @POST("/api/user/register")
+    suspend fun postUserRegister(@Body registerUserModel: RegisterUserModel): TokenResponse
 
     @GET("/api/student/profile")
     suspend fun getProfile(): EditProfileModel
