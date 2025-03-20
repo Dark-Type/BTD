@@ -6,7 +6,7 @@ import com.example.btd.domain.models.UiState
 import com.example.btd.domain.use_cases.GetStudentUseCase
 
 class GetStudentConverter {
-    fun convert(registerResult: Result<GetStudentUseCase.Response>): UiState<StudentAbsenceModel> =
+    fun convert(registerResult: Result<GetStudentUseCase.Response>): UiState<List<StudentAbsenceModel>> =
         when (registerResult) {
             is Result.Error -> {
                 UiState.Error(

@@ -17,5 +17,5 @@ interface ApiServiceTeacher {
     suspend fun getStudent(
         @Query("year") year: Int,
         @Query("month") month: Int,
-    ): StudentAbsenceModel
+    ): List<StudentAbsenceModel>
 }

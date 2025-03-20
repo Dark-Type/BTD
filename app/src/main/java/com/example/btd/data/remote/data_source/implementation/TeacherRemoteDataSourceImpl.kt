@@ -25,16 +25,31 @@ class TeacherRemoteDataSourceImpl(
         studentId: String,
         year: Int,
         month: Int,
-    ): Flow<List<AbsenceModel>> =
-        flow {
-            emit(apiAbsenceService.getStudentAbsences(studentId, year, month))
+    ): Flow<List<AbsenceModel>> {
+        try {
+            return flow {
+                emit(apiAbsenceService.getStudentAbsences(studentId, year, month))
+            }
+        } catch (
+            e: Exception
+        ) {
+            throw e
         }
+
+    }
+
 
     override fun getStudent(
         year: Int,
         month: Int,
-    ): Flow<StudentAbsenceModel> = flow {
-        emit(apiAbsenceService.getStudent(year, month))
+    ): Flow<List<StudentAbsenceModel>> {
+        try {
+            return flow {
+                emit(apiAbsenceService.getStudent(year, month))
+            }
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
 }

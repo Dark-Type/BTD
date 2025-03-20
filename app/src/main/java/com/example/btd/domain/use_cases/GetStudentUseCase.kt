@@ -21,5 +21,5 @@ class GetStudentUseCase(
         val month: Int,
     ) : UseCase.Request
 
-    data class Response(val absences: StudentAbsenceModel) : UseCase.Response
+    data class Response(val absences: List<StudentAbsenceModel> ) : UseCase.Response
 }
