@@ -121,7 +121,9 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
 
             _registerState.value = UiState.Loading
-
+            Log.d("AuthViewModel", "Registration: ${RegisterStudentModel(
+                surname, name, patronymic, email, password, phoneNumber ?: "", group
+            )}")
 
             val request = RegisterUseCase.Request(
                 RegisterStudentModel(
