@@ -89,7 +89,7 @@ class AuthViewModel : ViewModel() {
                 if (uiState is UiState.Success) {
                     UserSession.isLoggedIn = true
                     UserSession.userRole = role
-                    Log.d("token",uiState.data.token)
+                    Log.d("token", uiState.data.token)
                     TokenManager.getInstance().saveToken(uiState.data.token)
                 }
             }
@@ -107,7 +107,7 @@ class AuthViewModel : ViewModel() {
         patronymic: String = "",
         phoneNumber: String? = null,
     ) {
-        if (name.isBlank() || surname.isBlank() || !isValidEmail(email)  || group.isEmpty() || password.isBlank() || verifyPassword.isBlank()) {
+        if (name.isBlank() || surname.isBlank() || !isValidEmail(email) || group.isEmpty() || password.isBlank() || verifyPassword.isBlank()) {
             _registerState.value =
                 UiState.Error("Please fill out all required fields with valid values.")
             return
@@ -121,9 +121,13 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
 
             _registerState.value = UiState.Loading
-            Log.d("AuthViewModel", "Registration: ${RegisterStudentModel(
-                surname, name, patronymic, email, password, phoneNumber ?: "", group
-            )}")
+            Log.d(
+                "AuthViewModel", "Registration: ${
+                    RegisterStudentModel(
+                        surname, name, patronymic, email, password, phoneNumber ?: "", group
+                    )
+                }"
+            )
 
             val request = RegisterUseCase.Request(
                 RegisterStudentModel(
@@ -140,7 +144,12 @@ class AuthViewModel : ViewModel() {
                 if (uiState is UiState.Success) {
                     UserSession.isLoggedIn = true
                     UserSession.userRole = "student"
+                    Log.d("AuthViewModel", "token: "+uiState.data.token)
                     TokenManager.getInstance().saveToken(uiState.data.token)
+                    Log.d(
+                        "AuthViewModel",
+                        "uiState.data.token: ${TokenManager.getInstance().getToken()}"
+                    )
                 }
             }
         }
@@ -185,7 +194,12 @@ class AuthViewModel : ViewModel() {
                 if (uiState is UiState.Success) {
                     UserSession.isLoggedIn = true
                     UserSession.userRole = "student"
+                    Log.d("AuthViewModel", "token: "+uiState.data.token)
                     TokenManager.getInstance().saveToken(uiState.data.token)
+                    Log.d(
+                        "AuthViewModel",
+                        "uiState.data.token: ${TokenManager.getInstance().getToken()}"
+                    )
                 }
             }
         }

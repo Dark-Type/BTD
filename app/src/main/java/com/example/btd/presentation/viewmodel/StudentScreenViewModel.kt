@@ -98,7 +98,7 @@ class StudentScreenViewModel : ViewModel() {
                             startDate.atStartOfDay(ZoneOffset.UTC).format(formatter),
                             endDate.atStartOfDay(ZoneOffset.UTC).format(formatter),
                             reason,
-                            "fucking name",
+                            "strange name",
                             document
                         )
                         loadSubmissions()

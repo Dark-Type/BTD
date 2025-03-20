@@ -2,6 +2,7 @@ package com.example.btd.services
 
 import android.util.Log
 import com.example.btd.data.models.CreateAbsenceModel
+import com.example.btd.domain.TokenManager
 import com.example.btd.domain.converters.AddFileToAbsenceConverter
 import com.example.btd.domain.converters.CreateAbsenceConverter
 import com.example.btd.domain.models.UiState
@@ -71,18 +72,19 @@ object MockStudentAbsenceService : StudentAbsenceService {
                             )
                         ).map {
                             addFileToAbsenceConverter.convert(it)
-                        }.collect{
+                        }.collect {
 
-                            if(it is UiState.Error)
-                                Log.d("ssvm","error2: ${it.errorMessage}")
+                            if (it is UiState.Error)
+                                Log.d("ssvm", "error2: ${it.errorMessage}")
 
                         }
                     }
                 }
 
                 else -> {
-                    if(it is UiState.Error)
-                        Log.d("ssvm","error1: ${it.errorMessage}")
+                    Log.d("ssvm", TokenManager.getInstance().getToken()+" <--- token")
+                    if (it is UiState.Error)
+                        Log.d("ssvm", "error1: ${it.errorMessage}")
 
                 }
             }
