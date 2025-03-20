@@ -340,6 +340,7 @@ fun UpdatedStudentRegistrationForm(
             .padding(16.dp)
             .fillMaxWidth(0.9f)
             .heightIn(max = 550.dp)
+
     ) {
         Column(
             modifier = Modifier
