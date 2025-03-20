@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GroupModel(
-    private val id: String,
-    private val number: String,
+    val id: String,
+    val number: String,
     private val facultyId: String,
 )
