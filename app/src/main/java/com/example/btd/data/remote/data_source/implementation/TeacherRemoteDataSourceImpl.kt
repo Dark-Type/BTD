@@ -1,5 +1,6 @@
 package com.example.btd.data.remote.data_source.implementation
 
+import android.util.Log
 import com.example.btd.data.models.AbsenceModel
 import com.example.btd.data.models.StudentAbsenceModel
 import com.example.btd.data.networking.AuthInterceptor
@@ -48,6 +49,7 @@ class TeacherRemoteDataSourceImpl(
                 emit(apiAbsenceService.getStudent(year, month))
             }
         } catch (e: Exception) {
+            Log.e("TeacherDS","${e.message}")
             throw e
         }
     }

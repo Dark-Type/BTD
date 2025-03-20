@@ -51,107 +51,126 @@ class TeacherViewModel : ViewModel() {
 
     private fun loadAttendanceData() {
         viewModelScope.launch {
-            _isRefreshing.value = true
-            try {
-                val now = LocalDate.now()
-                val studentRequest = GetStudentUseCase.Request(
-                    year = now.year,
-                    month = now.monthValue
-                )
-
-                try {
-                    val studentResult = getStudent.execute(studentRequest)
-                        .map { studentConverter.convert(it) }
-                        .first()
-
-                    when (studentResult) {
-                        is UiState.Success -> {
-                            _verificationState.value = TeacherVerificationState.Verified
-
-                            val studentsList = studentResult.data
-                            if (studentsList.isEmpty()) {
-                                Log.d("TeacherViewModel", "No students found")
-                                _attendanceRecords.value = emptyList()
-                            } else {
-                                val allRecords = mutableListOf<AttendanceRecord>()
-
-                                for (student in studentsList) {
-                                    val absencesRequest = GetStudentAbsencesUseCase.Request(
-                                        studentId = student.studentId,
-                                        year = now.year,
-                                        month = now.monthValue
-                                    )
-
-                                    try {
-                                        val absencesResult =
-                                            getStudentAbsences.execute(absencesRequest)
-                                                .map { absencesConverter.convert(it) }
-                                                .first()
-
-                                        when (absencesResult) {
-                                            is UiState.Success -> {
-                                                val records = convertToAttendanceRecords(
-                                                    student,
-                                                    absencesResult.data
-                                                )
-                                                allRecords.addAll(records)
-                                            }
-
-                                            is UiState.Error -> {
-                                                val errorMsg = absencesResult.errorMessage
-                                                if (isAuthenticationError(errorMsg)) {
-                                                    _verificationState.value =
-                                                        TeacherVerificationState.NotVerified
-                                                    return@launch
-                                                } else {
-                                                    Log.e(
-                                                        "TeacherViewModel",
-                                                        "Error getting absences for student ${student.studentId}: $errorMsg"
-                                                    )
-                                                }
-                                            }
-
-                                            else -> {}
-                                        }
-                                    } catch (e: Exception) {
-                                        Log.e(
-                                            "TeacherViewModel",
-                                            "Exception getting absences for student ${student.studentId}: ${e.message}"
-                                        )
-                                    }
-                                }
-
-
-                                val mergedRecords = mergeRecordsByDate(allRecords)
-                                _attendanceRecords.value = mergedRecords
-                            }
-                        }
-
-                        is UiState.Error -> {
-                            val errorMsg = studentResult.errorMessage
-                            if (isAuthenticationError(errorMsg)) {
-                                _verificationState.value = TeacherVerificationState.NotVerified
-                            } else {
-                                Log.e("TeacherViewModel", "Error loading students: $errorMsg")
-                                _verificationState.value = TeacherVerificationState.Verified
-                            }
-                        }
-
-                        else -> {}
+            /*
+            val studentRequest = GetStudentUseCase.Request(
+                year = 2005,
+                month = 3
+            )
+            getStudent.execute(studentRequest).map { studentConverter.convert(it) }.collect {
+                when (it) {
+                    is UiState.Success -> {
+                        Log.e("TeacherViewModel", "все ок")
                     }
-                } catch (e: Exception) {
-                    val errorMsg = e.message ?: e.toString()
-                    Log.e("TeacherViewModel", "Exception during data loading: $errorMsg")
 
-                    if (isAuthenticationError(errorMsg)) {
-                        _verificationState.value = TeacherVerificationState.NotVerified
-                    } else {
-                        _verificationState.value = TeacherVerificationState.Verified
+                    is UiState.Error -> {
+                        Log.e("TeacherViewModel", "ошибка ${it.errorMessage}")
                     }
+
+                    is UiState.Loading -> {}
                 }
-            } finally {
-                _isRefreshing.value = false
-            }
+            }*/
+
+             try {
+                 _isRefreshing.value = true
+                 val now = LocalDate.now()
+                 val studentRequest = GetStudentUseCase.Request(
+                     year = now.year,
+                     month = now.monthValue
+                 )
+
+                 try {
+                     val studentResult = getStudent.execute(studentRequest)
+                         .map { studentConverter.convert(it) }
+                         .first()
+
+                     when (studentResult) {
+                         is UiState.Success -> {
+                             _verificationState.value = TeacherVerificationState.Verified
+
+                             val studentsList = studentResult.data
+                             if (studentsList.isEmpty()) {
+                                 Log.d("TeacherViewModel", "No students found")
+                                 _attendanceRecords.value = emptyList()
+                             } else {
+                                 val allRecords = mutableListOf<AttendanceRecord>()
+
+                                 for (student in studentsList) {
+                                     val absencesRequest = GetStudentAbsencesUseCase.Request(
+                                         studentId = student.studentId,
+                                         year = now.year,
+                                         month = now.monthValue
+                                     )
+
+                                     try {
+                                         val absencesResult =
+                                             getStudentAbsences.execute(absencesRequest)
+                                                 .map { absencesConverter.convert(it) }
+                                                 .first()
+
+                                         when (absencesResult) {
+                                             is UiState.Success -> {
+                                                 val records = convertToAttendanceRecords(
+                                                     student,
+                                                     absencesResult.data
+                                                 )
+                                                 allRecords.addAll(records)
+                                             }
+
+                                             is UiState.Error -> {
+                                                 val errorMsg = absencesResult.errorMessage
+                                                 if (isAuthenticationError(errorMsg)) {
+                                                     _verificationState.value =
+                                                         TeacherVerificationState.NotVerified
+                                                     return@launch
+                                                 } else {
+                                                     Log.e(
+                                                         "TeacherViewModel",
+                                                         "Error getting absences for student ${student.studentId}: $errorMsg"
+                                                     )
+                                                 }
+                                             }
+
+                                             else -> {}
+                                         }
+                                     } catch (e: Exception) {
+                                         Log.e(
+                                             "TeacherViewModel",
+                                             "Exception getting absences for student ${student.studentId}: ${e.message}"
+                                         )
+                                     }
+                                 }
+
+
+                                 val mergedRecords = mergeRecordsByDate(allRecords)
+                                 _attendanceRecords.value = mergedRecords
+                             }
+                         }
+
+                         is UiState.Error -> {
+                             val errorMsg = studentResult.errorMessage
+                             if (isAuthenticationError(errorMsg)) {
+                                 _verificationState.value = TeacherVerificationState.NotVerified
+                             } else {
+                                 Log.e("TeacherViewModel", "Error loading students: $errorMsg")
+                                 _verificationState.value = TeacherVerificationState.Verified
+                             }
+                         }
+
+                         else -> {}
+                     }
+                 } catch (e: Exception) {
+                     val errorMsg = e.message ?: e.toString()
+                     Log.e("TeacherViewModel", "Exception during data loading: $errorMsg")
+
+                     if (isAuthenticationError(errorMsg)) {
+                         _verificationState.value = TeacherVerificationState.NotVerified
+                     } else {
+                         _verificationState.value = TeacherVerificationState.Verified
+                     }
+                 }
+             } finally {
+                 _isRefreshing.value = false
+             }
         }
     }
 
@@ -186,7 +205,7 @@ class TeacherViewModel : ViewModel() {
 
     private fun convertToAttendanceRecords(
         student: StudentAbsenceModel,
-        absences: List<AbsenceModel>
+        absences: List<AbsenceModel>,
     ): List<AttendanceRecord> {
         val groupName = if (student.groups.isNotEmpty()) student.groups[0].number else "No Group"
         val fullName = "${student.surname} ${student.name}"

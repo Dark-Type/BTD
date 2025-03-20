@@ -10,7 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 
-class NetworkModule(private val config: NetworkConfig = NetworkConfig(baseUrl = "http://103.249.133.18:8080/")) {
+class NetworkModule(private val config: NetworkConfig = NetworkConfig(baseUrl = "http://103.249.133.18:5000/")) {
 
     fun provideOkHttpClient(
         authInterceptor: AuthInterceptor? = null,
