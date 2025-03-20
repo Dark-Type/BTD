@@ -51,25 +51,6 @@ class TeacherViewModel : ViewModel() {
 
     private fun loadAttendanceData() {
         viewModelScope.launch {
-            /*
-            val studentRequest = GetStudentUseCase.Request(
-                year = 2005,
-                month = 3
-            )
-            getStudent.execute(studentRequest).map { studentConverter.convert(it) }.collect {
-                when (it) {
-                    is UiState.Success -> {
-                        Log.e("TeacherViewModel", "все ок")
-                    }
-
-                    is UiState.Error -> {
-                        Log.e("TeacherViewModel", "ошибка ${it.errorMessage}")
-                    }
-
-                    is UiState.Loading -> {}
-                }
-            }*/
-
              try {
                  _isRefreshing.value = true
                  val now = LocalDate.now()
