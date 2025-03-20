@@ -11,7 +11,7 @@ interface ApiServiceTeacher {
         @Query("studentId") studentId: String,
         @Query("year") year: Int,
         @Query("month") month: Int,
-    ): List<AbsenceModel>
+    ): List<StudentAbsenceModel>
 
     @GET("/api/teacher/list")
     suspend fun getStudent(

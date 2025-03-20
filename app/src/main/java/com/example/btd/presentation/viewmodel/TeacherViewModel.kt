@@ -173,20 +173,19 @@ class TeacherViewModel : ViewModel() {
     }
 
     private fun isAuthenticationError(errorMessage: String): Boolean {
-        return errorMessage.contains("BAD_AUTHENTICATION", ignoreCase = true) ||
-                errorMessage.contains("Long live credential not available", ignoreCase = true) ||
+        return  false /*errorMessage.contains("Long live credential not available", ignoreCase = true) ||
                 errorMessage.contains("permission", ignoreCase = true) ||
                 errorMessage.contains("unauthorized", ignoreCase = true) ||
                 errorMessage.contains("authentication", ignoreCase = true) ||
                 errorMessage.contains("auth", ignoreCase = true) ||
                 errorMessage.contains("credential", ignoreCase = true) ||
                 errorMessage.contains("token", ignoreCase = true) ||
-                errorMessage.contains("verify", ignoreCase = true)
+                errorMessage.contains("verify", ignoreCase = true)*/
     }
 
     private fun convertToAttendanceRecords(
         student: StudentAbsenceModel,
-        absences: List<AbsenceModel>,
+        absences: List<StudentAbsenceModel>,
     ): List<AttendanceRecord> {
         val groupName = if (student.groups.isNotEmpty()) student.groups[0].number else "No Group"
         val fullName = "${student.surname} ${student.name}"

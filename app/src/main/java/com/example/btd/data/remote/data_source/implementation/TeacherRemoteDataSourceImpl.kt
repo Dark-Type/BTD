@@ -26,7 +26,7 @@ class TeacherRemoteDataSourceImpl(
         studentId: String,
         year: Int,
         month: Int,
-    ): Flow<List<AbsenceModel>> {
+    ): Flow<List<StudentAbsenceModel>> {
         try {
             return flow {
                 emit(apiAbsenceService.getStudentAbsences(studentId, year, month))

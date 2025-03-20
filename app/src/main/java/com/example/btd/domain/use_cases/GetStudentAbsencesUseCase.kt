@@ -1,6 +1,7 @@
 package com.example.btd.domain.use_cases
 
 import com.example.btd.data.models.AbsenceModel
+import com.example.btd.data.models.StudentAbsenceModel
 import com.example.btd.data.remote.data_source.implementation.TeacherRemoteDataSourceImpl
 import com.example.btd.data.remote.data_source.interfaces.TeacherRemoteDataSource
 import kotlinx.coroutines.Dispatchers
@@ -23,5 +24,5 @@ class GetStudentAbsencesUseCase(
         val month: Int,
     ) : UseCase.Request
 
-    data class Response(val absences: List<AbsenceModel>) : UseCase.Response
+    data class Response(val absences: List<StudentAbsenceModel>) : UseCase.Response
 }
