@@ -9,5 +9,6 @@ data class AbsenceModel(
     val to: String,
     val reason: String,
     val status: AbsenceStatus,
+
     val files: List<ConfirmationFileModel> = ArrayList(),
 )
